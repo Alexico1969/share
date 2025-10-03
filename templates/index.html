@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Share</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Alex van Winkel: Share code page</h1>
+        <!-- Your HTML content here -->
+        <form method="post" action="/add">
+            <label for="userInput">Paste your code here:</label>
+            <br>
+            <textarea id="userInput" name="data" rows="20" cols="50"></textarea>
+            <br>
+            <input class="submit-button" id="saveButton" type="submit" value="Submit">
+        </form>
+        <br>
+        <div style="margin-top:0.5rem;">
+            <label for="dumpKey">Dump key (required to view DB):</label>
+            <input id="dumpKey" type="password" placeholder="enter dump key">
+            <button id="showDbBtn" class="submit-button">Show DB</button>
+            <button id="copyJsonBtn" class="submit-button" style="display:none;">Copy JSON</button>
+            <button id="downloadJsonBtn" class="submit-button" style="display:none;">Download JSON</button>
+            <label style="margin-left:8px;"><input id="rawToggle" type="checkbox"> Raw JSON</label>
+        </div>
+        <div id="dbDump" style="display:none; margin-top:1rem;">
+            <h2>Database contents</h2>
+            <div id="dbContent"><pre>Loading...</pre></div>
+        </div>
+    </div>
+  
+
+    <script>
+        const copyBtn = document.getElementById('copyJsonBtn');
+        const downloadBtn = document.getElementById('downloadJsonBtn');
+        const rawToggle = document.getElementById('rawToggle');
+
+        document.getElementById('showDbBtn').addEventListener('click', async function () {
+            const dumpDiv = document.getElementById('dbDump');
+            const dbContent = document.getElementById('dbContent');
+            // Toggle visibility
+            if (dumpDiv.style.display === 'none') {
+                dumpDiv.style.display = 'block';
+                dbContent.innerHTML = '<pre>Loading...</pre>';
+                try {
+                    // send dump key in header if provided
+                    const key = document.getElementById('dumpKey').value;
+                    const headers = key ? { 'X-Dump-Key': key } : {};
+                    const resp = await fetch('/dump', { headers });
+                    if (!resp.ok) throw new Error('Network response was not ok');
+                    const json = await resp.json();
+                    if (!Array.isArray(json)) {
+                        dbContent.innerHTML = '<pre>' + JSON.stringify(json, null, 2) + '</pre>';
+                        return;
+                    }
+                    if (json.length === 0) {
+                        dbContent.innerHTML = '<pre>(empty)</pre>';
+                        return;
+                    }
+                    renderJsonOrTable(json);
+                    // show copy/download buttons when JSON present
+                    copyBtn.style.display = 'inline-block';
+                    downloadBtn.style.display = 'inline-block';
+                } catch (err) {
+                    dbContent.innerHTML = '<pre>Error: ' + escapeHtml(String(err)) + '</pre>';
+                }
+            } else {
+                dumpDiv.style.display = 'none';
+            }
+        });
+
+        copyBtn.addEventListener('click', function () {
+            const dbContent = document.getElementById('dbContent');
+            const raw = rawToggle.checked;
+            let text = '';
+            if (raw) {
+                // try to read the JSON from the displayed element
+                const pre = dbContent.querySelector('pre');
+                text = pre ? pre.textContent : dbContent.textContent;
+            } else {
+                // convert table back to JSON by fetching /dump again (with key)
+                // simpler approach: store lastJson on window
+                text = window.__lastDumpJSON ? JSON.stringify(window.__lastDumpJSON, null, 2) : dbContent.textContent;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard');
+            }).catch(() => {
+                alert('Copy failed');
+            });
+        });
+
+        downloadBtn.addEventListener('click', function () {
+            const key = document.getElementById('dumpKey').value;
+            const json = window.__lastDumpJSON ? JSON.stringify(window.__lastDumpJSON, null, 2) : '{}';
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'db_dump.json';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        });
+
+        function renderJsonOrTable(json) {
+            // keep last JSON for copy/download
+            window.__lastDumpJSON = json;
+            if (rawToggle.checked) {
+                document.getElementById('dbContent').innerHTML = '<pre>' + escapeHtml(JSON.stringify(json, null, 2)) + '</pre>';
+                return;
+            }
+            // Build a simple HTML table
+            let html = '<table border="1" cellpadding="6" cellspacing="0"><thead><tr>';
+            const cols = Object.keys(json[0]);
+            for (const c of cols) html += '<th>' + c + '</th>';
+            html += '</tr></thead><tbody>';
+            for (const row of json) {
+                html += '<tr>';
+                for (const c of cols) html += '<td>' + (row[c] === null ? '' : escapeHtml(String(row[c]))) + '</td>';
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+            document.getElementById('dbContent').innerHTML = html;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe.replace(/[&<>"'`]/g, function (m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;',
+                    '`': '&#96;'
+                })[m];
+            });
+        }
+    </script>
+</body>
+</html>
