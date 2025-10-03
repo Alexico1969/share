@@ -52,3 +52,14 @@ def get_all_data() -> List[Dict[str, object]]:
     return [{'id': r[0], 'data': r[1]} for r in rows]
 
 
+def clear_all() -> int:
+    """Delete all rows from the data table. Returns the number of deleted rows."""
+    conn = _get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM data")
+    deleted = conn.total_changes
+    conn.commit()
+    conn.close()
+    return deleted
+
+

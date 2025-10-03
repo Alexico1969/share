@@ -20,9 +20,8 @@
         </form>
         <br>
         <div style="margin-top:0.5rem;">
-            <label for="dumpKey">Dump key (required to view DB):</label>
-            <input id="dumpKey" type="password" placeholder="enter dump key">
             <button id="showDbBtn" class="submit-button">Show DB</button>
+            <button id="clearDbBtn" class="submit-button">Clear DB</button>
             <button id="copyJsonBtn" class="submit-button" style="display:none;">Copy JSON</button>
             <button id="downloadJsonBtn" class="submit-button" style="display:none;">Download JSON</button>
             <label style="margin-left:8px;"><input id="rawToggle" type="checkbox"> Raw JSON</label>
@@ -105,6 +104,23 @@
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('clearDbBtn').addEventListener('click', async function () {
+            if (!confirm('This will permanently delete all rows in the database. Continue?')) return;
+            const dbContent = document.getElementById('dbContent');
+            try {
+                const resp = await fetch('/clear', { method: 'POST' });
+                if (!resp.ok) throw new Error('Failed to clear DB: ' + resp.status);
+                const json = await resp.json();
+                dbContent.innerHTML = '<pre>Cleared. ' + JSON.stringify(json, null, 2) + '</pre>';
+                // clear last dump cache and hide copy/download
+                window.__lastDumpJSON = null;
+                copyBtn.style.display = 'none';
+                downloadBtn.style.display = 'none';
+            } catch (err) {
+                dbContent.innerHTML = '<pre>Error: ' + escapeHtml(String(err)) + '</pre>';
+            }
         });
 
         function renderJsonOrTable(json) {

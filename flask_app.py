@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, jsonify, abort
 import sqlite3
 import os
 from helpers import get_last, insert_data, delete_data, get_all_data
+from helpers import clear_all
 
 app = Flask(__name__)
 
@@ -95,3 +96,10 @@ def dump_db():
     # get JSON-serializable rows from helper
     rows = get_all_data()
     return jsonify(rows)
+
+
+@app.route('/clear', methods=['POST'])
+def clear_db():
+    """Delete all rows from the DB and return a JSON summary."""
+    deleted = clear_all()
+    return jsonify({ 'deleted': deleted })
