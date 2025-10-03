@@ -1,6 +1,9 @@
 {
   "_meta": {
     "pipfile-spec": 6,
+    "hash": {
+      "sha256": "60364d8fec40062cefddf8fc7df3eb90e861b5d9e9b7faf7d5782480799581c9"
+    },
     "requires": {
       "python_version": "3.11"
     },
