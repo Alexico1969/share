@@ -9,26 +9,29 @@
 <body>
 
     <div class="container">
-        <h1>Alex van Winkel: Share code page</h1>
-        <!-- Your HTML content here -->
-        <form method="post" action="/add">
-            <label for="userInput">Paste your code here:</label>
+        <div class="left-column">
+            <h1>Alex van Winkel: Share code page</h1>
+            <form method="post" action="/add">
+                <label for="userInput">Paste your code here:</label>
+                <br>
+                <textarea id="userInput" name="data" rows="20" cols="50"></textarea>
+                <br>
+                <input class="submit-button" id="saveButton" type="submit" value="Submit">
+            </form>
             <br>
-            <textarea id="userInput" name="data" rows="20" cols="50"></textarea>
-            <br>
-            <input class="submit-button" id="saveButton" type="submit" value="Submit">
-        </form>
-        <br>
-        <div style="margin-top:0.5rem;">
-            <button id="showDbBtn" class="submit-button">Show DB</button>
-            <button id="clearDbBtn" class="submit-button">Clear DB</button>
-            <button id="copyJsonBtn" class="submit-button" style="display:none;">Copy JSON</button>
-            <button id="downloadJsonBtn" class="submit-button" style="display:none;">Download JSON</button>
-            <label style="margin-left:8px;"><input id="rawToggle" type="checkbox"> Raw JSON</label>
+            <div style="margin-top:0.5rem;">
+                <button id="showDbBtn" class="submit-button">Show DB</button>
+                <button id="clearDbBtn" class="submit-button">Clear DB</button>
+                <button id="copyJsonBtn" class="submit-button" style="display:none;">Copy JSON</button>
+                <button id="downloadJsonBtn" class="submit-button" style="display:none;">Download JSON</button>
+                <label style="margin-left:8px;"><input id="rawToggle" type="checkbox"> Raw JSON</label>
+            </div>
         </div>
-        <div id="dbDump" style="display:none; margin-top:1rem;">
-            <h2>Database contents</h2>
-            <div id="dbContent"><pre>Loading...</pre></div>
+        <div class="right-column">
+            <div id="dbDump" style="display:none; margin-top:1rem;">
+                <h2>Database contents</h2>
+                <div id="dbContent"><pre>Loading...</pre></div>
+            </div>
         </div>
     </div>
   
