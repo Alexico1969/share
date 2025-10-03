@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "pipfile-spec": 6,
+    "requires": {
+      "python_version": "3.11"
+    },
+    "sources": [
+      {
+        "url": "https://pypi.org/simple",
+        "verify_ssl": true,
+        "name": "pypi"
+      }
+    ]
+  },
+  "default": {},
+  "develop": {}
+}
