@@ -1,6 +1,31 @@
 {
   "_meta": {
     "pipfile-spec": 6,
+    "hash": {
+      "sha256": "60364d8fec40062cefddf8fc7df3eb90e861b5d9e9b7faf7d5782480799581c9"
+    },
+    "requires": {
+      "python_version": "3.11"
+    },
+    "sources": [
+      {
+        "url": "https://pypi.org/simple",
+        "verify_ssl": true,
+        "name": "pypi"
+      }
+    ]
+  },
+  "default": {
+    "flask": {
+      "version": "*",
+      "markers": ""
+    }
+  },
+  "develop": {}
+}
+{
+  "_meta": {
+    "pipfile-spec": 6,
     "requires": {
       "python_version": "3.11"
     },
