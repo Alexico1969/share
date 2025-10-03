@@ -47,7 +47,8 @@
                 dbContent.innerHTML = '<pre>Loading...</pre>';
                 try {
                     // send dump key in header if provided
-                    const key = document.getElementById('dumpKey').value;
+                    const dumpKeyEl = document.getElementById('dumpKey');
+                    const key = dumpKeyEl ? dumpKeyEl.value : '';
                     const headers = key ? { 'X-Dump-Key': key } : {};
                     const resp = await fetch('/dump', { headers });
                     if (!resp.ok) throw new Error('Network response was not ok');
@@ -93,7 +94,8 @@
         });
 
         downloadBtn.addEventListener('click', function () {
-            const key = document.getElementById('dumpKey').value;
+            const dumpKeyEl = document.getElementById('dumpKey');
+            const key = dumpKeyEl ? dumpKeyEl.value : '';
             const json = window.__lastDumpJSON ? JSON.stringify(window.__lastDumpJSON, null, 2) : '{}';
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
