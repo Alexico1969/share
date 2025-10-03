@@ -29,3 +29,11 @@ body{
 .logo{
     margin: 20px;
 }
+
+.preserve {
+    white-space: pre-wrap; /* preserve newlines and wrap long lines */
+    font-family: monospace;
+    background: #fff;
+    padding: 6px;
+    border-radius: 4px;
+}

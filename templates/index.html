@@ -139,7 +139,15 @@
             html += '</tr></thead><tbody>';
             for (const row of json) {
                 html += '<tr>';
-                for (const c of cols) html += '<td>' + (row[c] === null ? '' : escapeHtml(String(row[c]))) + '</td>';
+                for (const c of cols) {
+                    let cell = row[c] === null ? '' : String(row[c]);
+                    // if the column looks like the data column (contains newlines or is long), show as pre
+                    if (c === 'data' || /\n|\t/.test(cell) || cell.length > 120) {
+                        html += '<td><pre class="preserve">' + escapeHtml(cell) + '</pre></td>';
+                    } else {
+                        html += '<td>' + escapeHtml(cell) + '</td>';
+                    }
+                }
                 html += '</tr>';
             }
             html += '</tbody></table>';
